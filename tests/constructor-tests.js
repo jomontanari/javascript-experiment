@@ -217,9 +217,108 @@ describe("Different ways to construct JavaScript objects", function() {
                     foo: "Hello World",
                     bar: this
                 }
-            }
+            };
 
             expect(returnMe).toBeATypeOf("function");
+        });
+
+        it("should create an object when called", function() {
+            var returnMe = function() {
+                return {
+                    foo: "Hello World",
+                    bar: this
+                }
+            };
+
+            var returnedObject = returnMe();
+
+            expect(returnedObject).toBeATypeOf("object");
+        });
+
+        it("should throw an error when called with new", function() {
+            var returnMe = function() {
+                return {
+                    foo: "Hello World",
+                    bar: this
+                }
+            };
+
+            try {
+                var iShouldThrowAnError = new returnMe();
+            }
+            catch (ex) {
+                expect(ex.name).toBe("TypeError");
+                expect(ex.message).toBe("youngFreeAndSingle is not a constructor");
+            }
+
+        });
+
+        it("should have a reference to the window in 'this'", function() {
+
+            var returnMe = function() {
+                return {
+                    foo: "Hello World",
+                    bar: this
+                }
+            };
+
+            var returnedObject = returnMe();
+
+            expect(returnedObject.bar).toBe(window);
+        });
+
+        it("should allow access to its public properties", function() {
+
+            var returnMe = function() {
+                return {
+                    foo: "Hello World",
+                    bar: this
+                }
+            };
+
+            var returnedObject = returnMe();
+
+            expect(returnedObject.foo).toBe("Hello World");
+
+        });
+
+        it("should not allow access to its private properties from outside", function() {
+
+            var returnMe = function() {
+
+                var privateFoo = "You can't see me";
+
+                return {
+                    foo: "Hello World",
+                    bar: this
+                }
+            };
+
+            var returnedObject = returnMe();
+
+            expect(returnedObject.privateFoo).toBeUndefined();
+        });
+
+        it("should allow access to its private properties from within public functions", function() {
+
+            var returnMe = function() {
+
+                var privateFoo = "You can't see me";
+
+                return {
+                    foo: function() {
+                        privateFoo = privateFoo + " ... but now you can"
+                    },
+                    bar: function() {
+                        return privateFoo;
+                    }
+                }
+            };
+
+            var returnedObject = returnMe();
+            returnedObject.foo();
+
+            expect(returnedObject.bar()).toBe("You can't see me ... but now you can");
         });
 
     })
