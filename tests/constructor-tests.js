@@ -212,6 +212,14 @@ describe("Different ways to construct JavaScript objects", function() {
 
         it("should be a function", function() {
 
+            var returnMe = function() {
+                return {
+                    foo: "Hello World",
+                    bar: this
+                }
+            }
+
+            expect(returnMe).toBeATypeOf("function");
         });
 
     })

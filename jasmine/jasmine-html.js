@@ -31,7 +31,7 @@ jasmine.TrivialReporter.prototype.createDom = function(type, attrs, childrenVarA
 jasmine.TrivialReporter.prototype.reportRunnerStarting = function(runner) {
   var showPassed, showSkipped;
 
-  this.outerDiv = this.createDom('div', { className: 'jasmine_reporter show-passed' },
+  this.outerDiv = this.createDom('div', { className: 'jasmine_reporter' },
       this.createDom('div', { className: 'banner' },
         this.createDom('div', { className: 'logo' },
             this.createDom('a', { href: 'http://pivotal.github.com/jasmine/', target: "_blank" }, "Jasmine"),
