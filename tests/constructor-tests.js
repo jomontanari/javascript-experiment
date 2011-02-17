@@ -4,9 +4,9 @@ describe("Different ways to construct JavaScript objects", function() {
 
         this.addMatchers({
             toBeATypeOf:
-                    function(expected) {
-                        return typeof this.actual === expected;
-                    }
+            function(expected) {
+                return typeof this.actual === expected;
+            }
 
         });
     });
@@ -53,7 +53,6 @@ describe("Different ways to construct JavaScript objects", function() {
             }
             catch (ex) {
                 expect(ex.name).toBe("TypeError");
-                expect(ex.message).toBe("youngFreeAndSingle is not a constructor");
             }
 
         });
@@ -104,6 +103,25 @@ describe("Different ways to construct JavaScript objects", function() {
             youngFreeAndSingle.foo();
 
             expect(youngFreeAndSingle.bar()).toBe("You can't see me ... but now you can");
+        });
+
+        it("should not have a prototype because only functions have prototypes unless we add one", function() {
+            var youngFreeAndSingle = (function() {
+
+                var privateFoo = "You can't see me";
+
+                return {
+                    foo: function() {
+                        privateFoo = privateFoo + " ... but now you can"
+                    },
+                    bar: function() {
+                        return privateFoo;
+                    }
+                }
+            })();
+
+            expect(youngFreeAndSingle.prototype).toBeUndefined();
+
         });
 
     });
@@ -206,7 +224,45 @@ describe("Different ways to construct JavaScript objects", function() {
 
             expect(newObject.bar()).toBe("You can't see me ... but now you can");
         });
+
+        it("should have a prototype for the function", function() {
+
+            var newMeUpBaby = function() {
+
+                var privateFoo = "You can't see me";
+
+                this.foo = function() {
+                    privateFoo = privateFoo + " ... but now you can"
+                };
+
+                this.bar = function() {
+                    return privateFoo;
+                }
+            };
+
+            expect(newMeUpBaby.prototype).toBeDefined();
+        });
+
+        it("objects created using new should not have a prototype", function() {
+            var newMeUpBaby = function() {
+
+                var privateFoo = "You can't see me";
+
+                this.foo = function() {
+                    privateFoo = privateFoo + " ... but now you can"
+                };
+
+                this.bar = function() {
+                    return privateFoo;
+                }
+            };
+
+            var newObject = new newMeUpBaby();
+
+            expect(newObject.prototype).toBeUndefined();
+        });
     });
+
 
     describe("returning an object from a function", function() {
 
@@ -248,7 +304,6 @@ describe("Different ways to construct JavaScript objects", function() {
             }
             catch (ex) {
                 expect(ex.name).toBe("TypeError");
-                expect(ex.message).toBe("youngFreeAndSingle is not a constructor");
             }
 
         });
@@ -321,5 +376,101 @@ describe("Different ways to construct JavaScript objects", function() {
             expect(returnedObject.bar()).toBe("You can't see me ... but now you can");
         });
 
-    })
+        it("should have a prototype", function() {
+
+            var returnMe = function() {
+
+                return {
+                    foo: function() {
+                        privateFoo = privateFoo + " ... but now you can"
+                    },
+                    bar: function() {
+                        return privateFoo;
+                    }
+                }
+            };
+
+            expect(returnMe.prototype).toBeDefined();
+        });
+
+        it("objects created calling a function should have an undefined prototype", function() {
+
+            var returnMe = function() {
+
+                return {
+                    foo: function() {
+                        privateFoo = privateFoo + " ... but now you can"
+                    },
+                    bar: function() {
+                        return privateFoo;
+                    }
+                }
+            };
+
+            var returnedObject = returnMe();
+
+            expect(returnedObject.prototype).toBeUndefined();
+        });
+
+    });
+
+    describe("An object created without using a function", function() {
+
+        it("should be an object", function() {
+
+            var createdObject = {
+                foo: "hello world",
+                bar: this
+            }
+
+            expect(createdObject).toBeATypeOf("object");
+        });
+
+        it("should have a reference to the current scope in this", function() {
+
+            var createdObject = {
+                foo: "hello world",
+                bar: this
+            }
+
+            expect(createdObject.bar).toBe(this);
+        });
+
+        it("should throw an error if you try to instantiate with New", function() {
+            var createdObject = {
+                foo: "hello world",
+                bar: this
+            }
+
+            try {
+                var iWillNotCreate = new createdObject();
+            }
+            catch (ex) {
+                expect(ex.name).toBe("TypeError");
+            }
+
+        });
+
+        it("should allow access to all of it's properties", function() {
+
+            var createdObject = {
+                noPrivateFoo: "You can see me",
+                foo: "hello world"
+            }
+
+            expect(createdObject.noPrivateFoo).toBe("You can see me");
+            expect(createdObject.foo).toBe("hello world");
+
+        });
+
+        it("should not have a prototype because only functions have prototypes unless we add one", function() {
+
+            var createdObject = {
+                noPrivateFoo: "You can see me",
+                foo: "hello world"
+            }
+
+            expect(createdObject.prototype).toBeUndefined();
+        });
+    });
 });
