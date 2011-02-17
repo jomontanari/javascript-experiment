@@ -211,42 +211,6 @@ describe("Prototypal Inheritance", function() {
 
     });
 
-    it("should do something weird if you don't assign the constructor", function() {
 
-        function Dog() {
-            this.sound = "Woof";
-            this.type = "Mongrel";
-            this.bones = [];
-            console.log("dog")
-        }
-
-        function Mongrel() {
-            console.log("mongrel")
-        }
-
-        var f = function() {
-        };
-        f.prototype = Dog.prototype;
-
-        function Mongrel() {
-        }
-
-        Mongrel.prototype = new f();
-
-
-        var jack = new Mongrel();
-        var rocky = new Mongrel();
-        jack.bones.push("chicken bone");
-        rocky.bones.push("pork bone");
-
-        expect(jack.constructor).toBe(Dog);
-
-        console.log(jack.bones);
-        console.log(rocky.bones);
-        console.log(Mongrel.constructor);
-
-        expect(true).toBeFalsy(); // because this is not yet finished
-
-    });
 
 });
