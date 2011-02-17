@@ -169,18 +169,70 @@ describe("Prototypal Inheritance", function() {
 
     });
 
-    it("should do something weird if you don't assign the constructor", function() {
+    it("should call the superclass constructor if it is instantiated within the prototype chain - even if no objects are created", function() {
+
+        var dogHasBeenInstantiated = false;
 
         function Dog() {
-            this.sound = "Woof";
-            this.type = "Mongrel";
-            this.bones = [];
+            dogHasBeenInstantiated = true;
         }
 
         function Mongrel() {
         }
 
         Mongrel.prototype = new Dog();
+        Mongrel.prototype.constructor = Mongrel;
+
+        expect(dogHasBeenInstantiated).toBeTruthy();
+
+    });
+
+    it("should avoid calling the superclass constructor by having an intermediate class in the prototype chain", function() {
+
+        var dogHasBeenInstantiated = false;
+
+        function Dog() {
+            dogHasBeenInstantiated = true;
+        }
+
+        var f = function() {
+        };
+        f.prototype = Dog.prototype;
+
+        function Mongrel() {
+        }
+
+        Mongrel.prototype = new f();
+        Mongrel.prototype.constructor = Mongrel;
+
+        var rocky = new Mongrel();
+
+        expect(dogHasBeenInstantiated).toBeFalsy();
+
+    });
+
+    it("should do something weird if you don't assign the constructor", function() {
+
+        function Dog() {
+            this.sound = "Woof";
+            this.type = "Mongrel";
+            this.bones = [];
+            console.log("dog")
+        }
+
+        function Mongrel() {
+            console.log("mongrel")
+        }
+
+        var f = function() {
+        };
+        f.prototype = Dog.prototype;
+
+        function Mongrel() {
+        }
+
+        Mongrel.prototype = new f();
+
 
         var jack = new Mongrel();
         var rocky = new Mongrel();
@@ -194,48 +246,6 @@ describe("Prototypal Inheritance", function() {
         console.log(Mongrel.constructor);
 
         expect(true).toBeFalsy(); // because this is not yet finished
-
-    });
-
-    it("should call the superclass constructor if it is instantiated within the prototype chain - even if no objects are created", function() {
-
-        var dogHasBeenInstantiated = false;
-
-        function Dog() {
-            this.sound = "Woof";
-            this.type = "Mongrel";
-            dogHasBeenInstantiated = true;
-        }
-
-
-        function Mongrel() {}
-        Mongrel.prototype = new Dog();
-        Mongrel.prototype.constructor = Mongrel;
-
-        expect(dogHasBeenInstantiated).toBeTruthy();
-
-    });
-
-    it("should avoid calling the superclass constructor by having an intermediate class in the prototype chain", function() {
-
-        var dogHasBeenInstantiated = false;
-
-        function Dog() {
-            this.sound = "Woof";
-            this.type = "Mongrel";
-            dogHasBeenInstantiated = true;
-        }
-
-        var f = function() {};
-        f.prototype = Dog.prototype;
-
-        function Mongrel() {}
-        Mongrel.prototype = new f();
-        Mongrel.prototype.constructor = Mongrel;
-
-        var rocky = new Mongrel();
-
-        expect(dogHasBeenInstantiated).toBeFalsy();
 
     });
 
