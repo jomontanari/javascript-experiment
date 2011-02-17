@@ -211,6 +211,65 @@ describe("Prototypal Inheritance", function() {
 
     });
 
+    it("requires all properties and methods to be attached to the prototype of the parent if it is not instantiated within the prototype chain", function() {
 
+        function Dog() {
+            this.sound = "Woof";
+        }
+
+        Dog.prototype.type = "Mongrel";
+
+        var f = function() {
+        };
+        f.prototype = Dog.prototype;
+
+        function Mongrel() {
+        }
+
+        Mongrel.prototype = new f();
+        Mongrel.prototype.constructor = Mongrel;
+
+        var rocky = new Mongrel();
+
+        expect(rocky.sound).toBeUndefined();
+        expect(rocky.type).toBe("Mongrel");
+    });
+
+
+    it("should do something weird if you don't assign the constructor, but I still don't know what", function() {
+
+        function Dog() {
+            this.sound = "Woof";
+            this.type = "Mongrel";
+            this.bones = [];
+            console.log("dog")
+        }
+
+        function Mongrel() {
+            console.log("mongrel")
+        }
+
+        var f = function() {
+        };
+        f.prototype = Dog.prototype;
+
+        function Mongrel() {
+        }
+
+        Mongrel.prototype = new f();
+
+
+        var jack = new Mongrel();
+        var rocky = new Mongrel();
+
+        expect(jack.constructor).toBe(Dog);
+
+        console.log(jack.bones);
+        console.log(rocky.bones);
+        console.log(Mongrel.constructor);
+
+        expect(true).toBeFalsy(); // because this is not yet finished
+
+    });
 
 });
