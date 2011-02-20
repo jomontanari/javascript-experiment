@@ -1,10 +1,15 @@
-// To test:
-// Constructor chain
-// Prototype chain
-// Overwriting properties
-// Hiding private variables
-
 describe("Prototypal Inheritance", function() {
+
+    beforeEach(function() {
+
+        this.addMatchers({
+            toBeAnInstanceOf:
+            function(expected) {
+                return this.actual instanceof expected;
+            }
+
+        });
+    });
 
     it("should use the same prototype for all objects of the same type when that type inherits from another prototype", function() {
 
@@ -236,40 +241,35 @@ describe("Prototypal Inheritance", function() {
     });
 
 
-    it("should do something weird if you don't assign the constructor, but I still don't know what", function() {
+    it("should behave exactly the same if the constructor property is not set! But the property will be different", function() {
 
         function Dog() {
             this.sound = "Woof";
             this.type = "Mongrel";
             this.bones = [];
-            console.log("dog")
         }
 
         function Mongrel() {
-            console.log("mongrel")
         }
 
-        var f = function() {
+        Mongrel.prototype = new Dog();
+        Mongrel.prototype.constructor = Mongrel;
+
+        function Mutt() {
         };
-        f.prototype = Dog.prototype;
-
-        function Mongrel() {
-        }
-
-        Mongrel.prototype = new f();
+        Mutt.prototype = new Dog();
 
 
         var jack = new Mongrel();
-        var rocky = new Mongrel();
+        var rocky = new Mutt();
 
-        expect(jack.constructor).toBe(Dog);
+        expect(Mutt.prototype.constructor).toBe(Dog);
+        expect(Mongrel.prototype.constructor).toBe(Mongrel);
 
-        console.log(jack.bones);
-        console.log(rocky.bones);
-        console.log(Mongrel.constructor);
-
-        expect(true).toBeFalsy(); // because this is not yet finished
-
+        expect(jack).toBeAnInstanceOf(Mongrel);
+        expect(jack).toBeAnInstanceOf(Dog);
+        expect(rocky).toBeAnInstanceOf(Mutt);
+        expect(rocky).toBeAnInstanceOf(Dog);
     });
 
 });
